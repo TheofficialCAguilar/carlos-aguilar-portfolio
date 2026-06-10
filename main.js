@@ -91,69 +91,69 @@ const timelineObs = new IntersectionObserver((entries) => {
 timelineItems.forEach(el => timelineObs.observe(el));
 
 
-const skillRows = document.querySelectorAll('.skill-row');
-skillRows.forEach(row => {
+document.getElementById('form-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
   
-  row.querySelector('.skill-bar-fill').style.setProperty('--pct', row.dataset.pct);
-  row.style.setProperty('--pct', row.dataset.pct);
-});
-const skillObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      skillObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.5 });
-skillRows.forEach(r => skillObs.observe(r));
-
-
-const counters = document.querySelectorAll('[data-count]');
-const countObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const target = +e.target.dataset.count;
-      const duration = 1200;
-      const start = performance.now();
-
-      const tick = (now) => {
-        const p = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - p, 3); 
-        e.target.textContent = Math.floor(eased * target);
-        if (p < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          e.target.textContent = target + '+';
+    const nameVal = document.getElementById('form-name').value.trim();
+    const emailVal = document.getElementById('form-email').value.trim();
+    const msgVal = document.getElementById('form-message').value.trim();
+  
+    if (!nameVal || !emailVal || !msgVal) return;
+  
+    const btn = document.getElementById('form-btn');
+    const txt = document.getElementById('btn-text');
+  
+    btn.disabled = true;
+    txt.textContent = 'Sending...';
+  
+    try {
+      const response = await fetch(
+        'https://formspree.io/f/mdavlapn',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: nameVal,
+            email: emailVal,
+            message: msgVal
+          })
         }
-      };
-      requestAnimationFrame(tick);
-      countObs.unobserve(e.target);
+      );
+  
+      if (response.ok) {
+  
+        txt.textContent = 'Sent ✓';
+  
+        document.getElementById('form-success').style.display = 'block';
+  
+        document.getElementById('form-name').value = '';
+        document.getElementById('form-email').value = '';
+        document.getElementById('form-message').value = '';
+  
+        setTimeout(() => {
+          txt.textContent = 'Send Message';
+          btn.disabled = false;
+        }, 2500);
+  
+      } else {
+        throw new Error('Submission failed');
+      }
+  
+    } catch (error) {
+  
+      txt.textContent = 'Failed';
+  
+      setTimeout(() => {
+        txt.textContent = 'Send Message';
+        btn.disabled = false;
+      }, 2500);
+  
+      console.error(error);
     }
   });
-}, { threshold: 0.5 });
-counters.forEach(c => countObs.observe(c));
-
-
-document.getElementById('form-btn').addEventListener('click', () => {
-  const nameVal  = document.getElementById('form-name').value.trim();
-  const emailVal = document.getElementById('form-email').value.trim();
-  const msgVal   = document.getElementById('form-message').value.trim();
-
-  if (!nameVal || !emailVal || !msgVal) return; 
-
-  const btn = document.getElementById('form-btn');
-  const txt = document.getElementById('btn-text');
-  btn.disabled = true;
-  txt.textContent = 'Sending…';
-
-  setTimeout(() => {
-    txt.textContent = 'Sent ✓';
-    document.getElementById('form-success').style.display = 'block';
-    document.getElementById('form-name').value    = '';
-    document.getElementById('form-email').value   = '';
-    document.getElementById('form-message').value = '';
-  }, 900);
-});
 
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
