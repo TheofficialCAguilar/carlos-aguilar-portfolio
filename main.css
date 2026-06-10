@@ -410,6 +410,21 @@ section {
   gap: 0.5rem;
   margin-bottom: 2rem;
 }
+
+.hero-mini-photo {
+    margin-top: 2rem;
+    margin-left: 2rem;
+  }
+  
+  .hero-mini-photo img {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    filter: grayscale(100%);
+    border: 1px solid var(--border);
+  }
+
 .tag {
   font-size: 0.7rem;
   letter-spacing: 0.1em;
@@ -675,6 +690,7 @@ footer a:hover { color: var(--fg); }
   100% { transform: scaleY(0); transform-origin: bottom; }
 }
 
+/* ─── Responsive ─── */
 @media (max-width: 900px) {
   nav { padding: 1.25rem 2rem; }
   section { padding: 6rem 2rem 4rem; }
