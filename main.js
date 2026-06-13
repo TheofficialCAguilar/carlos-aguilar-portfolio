@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// Shooting Stars Background
-// ─────────────────────────────────────────────
 (function () {
   const canvas = document.getElementById('stars-canvas');
   const ctx    = canvas.getContext('2d');
@@ -14,7 +11,6 @@
   resize();
   window.addEventListener('resize', resize);
 
-  // ── Static star field ─────────────────────
   const STAR_COUNT = 180;
   const stars = Array.from({ length: STAR_COUNT }, () => ({
     x:       Math.random() * window.innerWidth,
@@ -23,29 +19,25 @@
     opacity: Math.random() * 0.5 + 0.1,
   }));
 
-  // ── Shooting stars ────────────────────────
   const MAX_SHOOTERS = 6;
   const shooters = [];
 
   function spawnShooter() {
-    // Start from a random point along the top or left edge
     const fromTop  = Math.random() > 0.4;
     const x        = fromTop ? Math.random() * W : 0;
     const y        = fromTop ? 0 : Math.random() * H * 0.6;
 
-    // Angle: always travelling down-right (like a meteor shower)
-    const angle    = (Math.random() * 18 + 30) * (Math.PI / 180); // 30–48 deg
-    const speed    = Math.random() * 520 + 280;  // px/sec
-    const length   = Math.random() * 120 + 60;   // tail length px
+    const angle    = (Math.random() * 18 + 30) * (Math.PI / 180); 
+    const speed    = Math.random() * 520 + 280;  
+    const length   = Math.random() * 120 + 60;   
     const opacity  = Math.random() * 0.55 + 0.3;
     const width    = Math.random() * 1.2 + 0.4;
 
     shooters.push({ x, y, angle, speed, length, opacity, width, life: 1.0 });
   }
 
-  // Stagger initial spawns so they don't all appear at once
   let spawnTimer = 0;
-  const SPAWN_INTERVAL = 1.4; // seconds between new shooters
+  const SPAWN_INTERVAL = 1.4; 
 
   let last = performance.now();
 
@@ -53,10 +45,8 @@
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
 
-    // Clear with a very slight fade so trails look natural on the dark bg
     ctx.clearRect(0, 0, W, H);
 
-    // ── Draw static stars ──────────────────
     stars.forEach(s => {
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
@@ -64,14 +54,12 @@
       ctx.fill();
     });
 
-    // ── Spawn new shooters ─────────────────
     spawnTimer += dt;
     if (spawnTimer >= SPAWN_INTERVAL && shooters.length < MAX_SHOOTERS) {
       spawnShooter();
       spawnTimer = 0;
     }
 
-    // ── Draw & update shooters ─────────────
     for (let i = shooters.length - 1; i >= 0; i--) {
       const s = shooters[i];
 
@@ -80,16 +68,13 @@
       s.x += dx;
       s.y += dy;
 
-      // Fade out as it travels
       s.life -= dt * 0.55;
 
-      // Remove if off screen or fully faded
       if (s.life <= 0 || s.x > W + 50 || s.y > H + 50) {
         shooters.splice(i, 1);
         continue;
       }
 
-      // Tail: gradient from bright head to transparent tail
       const tailX = s.x - Math.cos(s.angle) * s.length;
       const tailY = s.y - Math.sin(s.angle) * s.length;
 
@@ -106,7 +91,6 @@
       ctx.lineCap     = 'round';
       ctx.stroke();
 
-      // Bright head glow
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.width * 1.2, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,255,255,${s.opacity * s.life * 0.9})`;
@@ -116,14 +100,11 @@
     requestAnimationFrame(draw);
   }
 
-  // Spawn a couple right away so the screen isn't empty on load
   spawnShooter();
   setTimeout(spawnShooter, 600);
 
   requestAnimationFrame(draw);
 })();
-
-// ─────────────────────────────────────────────
 
 const name = "Carlos Aguilar";
 const heroName = document.getElementById('hero-name');
